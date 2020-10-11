@@ -1,0 +1,33 @@
+Reference measurement:
+10 Hz, serdesDelay 256: eventData_1598443510_2020-08-26_14-05-10.bin
+ --> weird ROI, 4 cluster, negative ROIs
+
+Pulser rates:
+34 Hz, serdesDelay 256: eventData_1598444174_2020-08-26_14-16-14.bin
+  --> weird ROIs, 3 cluster, just few negative
+71 Hz, serdesDelay 256: eventData_1598444556_2020-08-26_14-22-36.bin
+  --> weird ROIs, 3 cluster, just few negative
+
+
+SerdesDelay:
+10 Hz, serdesDelay 100: eventData_1598444802_2020-08-26_14-26-42.bin
+    --> weird ROI, 4 clusters, negative ROIs
+10 Hz, serdesDelay 400: eventData_1598445477_2020-08-26_14-37-57.bin
+    --> weird ROI, 4 cluster, negative ROIs
+
+Cascading:
+smcrw -w10ac –vFF => cascading off, 10 Hz, serdesDelay 100: eventData_1598446538_2020-08-26_14-55-38.bin
+    --> normal ROI, more ROI before 512
+smcrw -w10ac –vFF => cascading off, 10 Hz, serdesDelay 50: eventData_1598447256_2020-08-26_15-07-36.bin
+    --> normal ROI (lot of 0), more ROI before 512.
+smcrw -w10ac –vFF => cascading off, 34 Hz, serdesDelay 50: eventData_1598448118_2020-08-26_15-21-58.bin
+    --> normal ROI, more ROI before 512
+
+
+--> weird ROIs means that distribution on the last chip with a but of ROIs in the first chip
+
+What to do ?
+    - find the pulse start (or maximum ?) in all
+    - find if the pulse disappear in non-cascaded
+
+    - plot ROIs for different chips
