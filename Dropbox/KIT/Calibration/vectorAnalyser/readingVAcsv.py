@@ -6,32 +6,69 @@ Created on Mon Sep 23 14:31:58 2019
 @author: roxanneturcotte
 """
 import numpy as np
-import matplotlib.pyplot as plt
-
 import pandas as pd
-import os
-import glob
+mega = 10**(6)
 
 
-# filename = "*.csv"
-# date = "24-09"
-# path = ""
-mega = 10**(-6)
+def fromPowertoDb(value):
+    return 20 * np.log10(value)
+
+
+def fromDbtoPower(value):
+    return 10 ** (value / 20)
+
+
+def HztoMhz(freq):
+    return freq*mega
+
+
+def MhztoHz(freq):
+    return freq/mega
+
 
 class VectorAnalyser():
     def __init__(self):
         self.filename = ""
         self.path = ""
-        self.data = []
-        #self.folder = ""
+        self.amplitude = []
+        self.frequency = []
 
+
+
+    # Todo : split the file when there is more than one measurement
     def readCSV(self, path, filename):
-        # Read the folder, stock the data
+        """reads the file and stock 2 arrays, frequency and amplitude"""
         self.path = path
         self.filname = filename
         data = pd.read_csv(path + filename, names=["freq", "amp"], comment="!", header=1, skipfooter=1)
-        self.data = data
+        self.amplitude = data["amp"]
+        self.frequency = data["freq"]
         return data
+
+
+    def addPairsTogether(self, diffPairPositive, diffPairNegative):
+        return fromPowertoDb(fromDbtoPower(diffPairPositive) + fromDbtoPower(diffPairNegative))
+
+
+    def splitData(self, frequency, amplitude):
+        # When array frequency gets same value, split ?
+        return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # ====================================
+    # TO BE DELETED
 
     # def plotGain(self, ax, color="k", alpha=0.5, linestyle="--", label="placeHolder"):
     #     ax.plot(self.data["freq"]*mega, self.data["amp"], color=color, alpha=alpha, linestyle=linestyle, label=label)
@@ -168,20 +205,20 @@ class VectorAnalyser():
 # fig_s21.savefig("test")
 
 
-if __name__ == '__main__':
-    import glob
-    import matplotlib
-    import matplotlib.gridspec as gridspec
-    import skrf as rf
-
-    font = {'size': 16}
-
-    matplotlib.rc('font', **font)
-
-    path = "/Users/roxanneturcotte/Dropbox/KIT/Calibration/vectorAnalyser/"
-    folder = "10092020/"
-
-    va = VectorAnalyser()
+# if __name__ == '__main__':
+#     import glob
+#     import matplotlib
+#     import matplotlib.gridspec as gridspec
+#     import skrf as rf
+#
+#     font = {'size': 16}
+#
+#     matplotlib.rc('font', **font)
+#
+#     path = "/Users/roxanneturcotte/Dropbox/KIT/Calibration/vectorAnalyser/"
+#     folder = "10092020/"
+#
+#     va = VectorAnalyser()
     # for filename in glob.iglob(path+folder+"*.csv", recursive=True):
     #     filename = filename.split("/")[-1]
     #     print(filename)
@@ -201,78 +238,78 @@ if __name__ == '__main__':
     # sxhp_file = "/Users/roxanneturcotte/Dropbox/KIT/Hardware/radioTad-test/SXHP-48+_S2P/SXHP-48+_Plus25DegC.s2p"
     # ring_slot_sxhp = rf.Network(sxhp_file)
 
-# PLOT POLARISATION
-    gs = gridspec.GridSpec(1, 1, wspace=0.2, hspace=0.3)
-    fig = plt.figure(figsize=(8, 5.2))
-    ax = fig.add_subplot(gs[0])
-    data = va.readCSV(path+folder, "F_S_HP_RB11N.csv")
-    va.plotGain(ax, color="k", alpha=0.5, linestyle="-", label="pol. 1")
-    data = va.readCSV(path+folder, "F_S_HP_RB_11N.csv")
-    va.plotGain(ax, color="k", alpha=0.1, linestyle="-", label="pol. 1")
-    data = va.readCSV(path+folder, "F_S_HP_RB11P.csv")
-    va.plotGain(ax, color="r", alpha=0.5, linestyle="--", label="pol. 2")
-    data = va.readCSV(path+folder, "F_S_HP_RB_11P.csv")
-    va.plotGain(ax, color="r", alpha=0.1, linestyle="--", label="pol. 2")
-    #ax.set_title(filename)
-    ax.legend()
-    ax.set_ylim(-5, -2)
-    ax.set_xlim(40, 350)
-    plt.savefig(path+folder+"plot/twoPol2", format="png")
-    plt.close()
+# # PLOT POLARISATION
+#     gs = gridspec.GridSpec(1, 1, wspace=0.2, hspace=0.3)
+#     fig = plt.figure(figsize=(8, 5.2))
+#     ax = fig.add_subplot(gs[0])
+#     data = va.readCSV(path+folder, "F_S_HP_RB11N.csv")
+#     va.plotGain(ax, color="k", alpha=0.5, linestyle="-", label="pol. 1")
+#     data = va.readCSV(path+folder, "F_S_HP_RB_11N.csv")
+#     va.plotGain(ax, color="k", alpha=0.1, linestyle="-", label="pol. 1")
+#     data = va.readCSV(path+folder, "F_S_HP_RB11P.csv")
+#     va.plotGain(ax, color="r", alpha=0.5, linestyle="--", label="pol. 2")
+#     data = va.readCSV(path+folder, "F_S_HP_RB_11P.csv")
+#     va.plotGain(ax, color="r", alpha=0.1, linestyle="--", label="pol. 2")
+#     #ax.set_title(filename)
+#     ax.legend()
+#     ax.set_ylim(-5, -2)
+#     ax.set_xlim(40, 350)
+#     plt.savefig(path+folder+"plot/twoPol2", format="png")
+#     plt.close()
+#
+# # PLOT TOTAL GAIN
+#     def plot_addedPairs(path, file1, file2):
+#         gs = gridspec.GridSpec(1, 1, wspace=0.2, hspace=0.3)
+#         fig = plt.figure(figsize=(8, 5.2))
+#         ax = fig.add_subplot(gs[0])
+#         dataPol1 = va.readCSV(path, file1)
+#         #va.plotGain(ax, color="k", alpha=0.1, linestyle="-", label="pol. 1")
+#         dataPol2 = va.readCSV(path, file2)
+#         ax.plot(va.data["freq"], (20 * np.log10(10 ** (dataPol1["amp"] / 20) + 10 ** (dataPol2["amp"] / 20)))-3, linewidth=2)
+#         # ax.plot(va.data["freq"] * mega, dataPol1["amp"]+dataPol2["amp"])
+#
+#         #ring_slot_ulp.frequency.unit = 'hz'
+#         #ring_slot_ulp.plot_s_db(m=0, n=1)
+#
+#         #ring_slot_sxhp.frequency.unit = 'hz'
+#         #ring_slot_sxhp.plot_s_db(m=0, n=1)
+#
+#         ax.set_xlabel("frequency [MHz]")
+#         ax.set_ylabel("gain [dB]")
+#         ax.set_ylim(-5, 10)
+#         ax.set_xlim(30, 450)
+#
+#         #ax.set_ylim(0.2e8, 1)
+#         #ax.set_xlim(0.3e8, 5e8)
+#         #plt.tight_layout()
+#         plt.savefig(path + "sumPairsZoom.png", format="png")
 
-# PLOT TOTAL GAIN
-    def plot_addedPairs(path, file1, file2):
-        gs = gridspec.GridSpec(1, 1, wspace=0.2, hspace=0.3)
-        fig = plt.figure(figsize=(8, 5.2))
-        ax = fig.add_subplot(gs[0])
-        dataPol1 = va.readCSV(path, file1)
-        #va.plotGain(ax, color="k", alpha=0.1, linestyle="-", label="pol. 1")
-        dataPol2 = va.readCSV(path, file2)
-        ax.plot(va.data["freq"], (20 * np.log10(10 ** (dataPol1["amp"] / 20) + 10 ** (dataPol2["amp"] / 20)))-3, linewidth=2)
-        # ax.plot(va.data["freq"] * mega, dataPol1["amp"]+dataPol2["amp"])
-
-        #ring_slot_ulp.frequency.unit = 'hz'
-        #ring_slot_ulp.plot_s_db(m=0, n=1)
-
-        #ring_slot_sxhp.frequency.unit = 'hz'
-        #ring_slot_sxhp.plot_s_db(m=0, n=1)
-
-        ax.set_xlabel("frequency [MHz]")
-        ax.set_ylabel("gain [dB]")
-        ax.set_ylim(-5, 10)
-        ax.set_xlim(30, 450)
-
-        #ax.set_ylim(0.2e8, 1)
-        #ax.set_xlim(0.3e8, 5e8)
-        #plt.tight_layout()
-        plt.savefig(path + "sumPairsZoom.png", format="png")
-
-
-path = "/Users/roxanneturcotte/Dropbox/KIT/Calibration/vectorAnalyser/radioBoard/"
-file1 = "B01_11P.csv"
-file2 = "B01_11N.csv"
-plot_addedPairs(path, file1, file2)
-
-    #ax.set_title(filename)
-    # ax.legend()
-    # ax.set_ylim(-5, -2)
-    # ax.set_xlim(40, 350)
-    # plt.savefig(path+folder+"plot/twoPol2", format="png")
-    # plt.close()
-
-
-
-
-
-# ADDING THEM TOGETHER
-"F_S_HP_RB11N"      # Measurement set 1
-"F_S_HP_RB11P"
-
-"F_S_HP_RB_11N"     # Measurement set 2
-"F_S_HP_RB_11P"
-
-# COMPARING SPLITTER OUTPUT
-"F_S4_HP_RB11N"
-"F_S3_HP_RB11N"
-"F_S2_HP_RB11N"
-"F_S_HP_RB11N"
+#
+# path = "/Users/roxanneturcotte/Dropbox/KIT/Calibration/vectorAnalyser/radioBoard/"
+# file1 = "B01_11P.csv"
+# file2 = "B01_11N.csv"
+# plot_addedPairs(path, file1, file2)
+#
+#     #ax.set_title(filename)
+#     # ax.legend()
+#     # ax.set_ylim(-5, -2)
+#     # ax.set_xlim(40, 350)
+#     # plt.savefig(path+folder+"plot/twoPol2", format="png")
+#     # plt.close()
+#
+#
+#
+#
+#
+# # ADDING THEM TOGETHER
+# "F_S_HP_RB11N"      # Measurement set 1
+# "F_S_HP_RB11P"
+#
+# "F_S_HP_RB_11N"     # Measurement set 2
+# "F_S_HP_RB_11P"
+#
+# # COMPARING SPLITTER OUTPUT
+# "F_S4_HP_RB11N"
+# "F_S3_HP_RB11N"
+# "F_S2_HP_RB11N"
+# "F_S_HP_RB11N"

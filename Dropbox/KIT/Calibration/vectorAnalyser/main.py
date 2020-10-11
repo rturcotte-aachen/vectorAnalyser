@@ -1,6 +1,8 @@
 import numpy as np
 import VAPlotter as vaplt
 import readingVAcsv
+import os
+import glob
 
 va = readingVAcsv.VectorAnalyser()
 
