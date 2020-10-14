@@ -7,7 +7,8 @@ Created on Mon Sep 23 14:31:58 2019
 """
 import numpy as np
 import pandas as pd
-mega = 10**(6)
+
+mega = 10 ** (6)
 
 
 def fromPowertoDb(value):
@@ -19,53 +20,48 @@ def fromDbtoPower(value):
 
 
 def HztoMhz(freq):
-    return freq*mega
+    return freq * mega
 
 
 def MhztoHz(freq):
-    return freq/mega
+    return freq / mega
 
 
-class VectorAnalyser():
-    def __init__(self):
+def split(frequency, amplitude):
+    begin = np.argwhere(frequency == "BEGIN")
+    frequency = np.array(frequency).reshape(len(begin), -1)[:, 1:-1]
+    amplitude = np.array(amplitude).reshape(len(begin), -1)[:, 1:-1]
+    return frequency, amplitude
+
+
+class VectorAnalyser:
+    def __init__(self, path, filename):
         self.filename = ""
         self.path = ""
         self.amplitude = []
         self.frequency = []
-
-
+        self.readCSV(path, filename)
 
     # Todo : split the file when there is more than one measurement
     def readCSV(self, path, filename):
         """reads the file and stock 2 arrays, frequency and amplitude"""
-        self.path = path
-        self.filname = filename
-        data = pd.read_csv(path + filename, names=["freq", "amp"], comment="!", header=1, skipfooter=1)
-        self.amplitude = data["amp"]
-        self.frequency = data["freq"]
+        data = pd.read_csv(path + filename, names=["freq", "amp"], comment="!")
+        self.frequency, self.amplitude = split(data["freq"], data["amp"])
+        # self.amplitude = data["amp"]
+        # self.frequency = data["freq"]
         return data
 
+    def removeDuplicates(self, frequency):
+        return list(set(frequency))
+
+    def split(self, frequency, amplitude):
+        if len(frequency) < len(amplitude):
+            amplitude1 = amplitude[:len(frequency)]
+            amplitude2 = amplitude[len(frequency):]
+        return [amplitude1, amplitude2]
 
     def addPairsTogether(self, diffPairPositive, diffPairNegative):
         return fromPowertoDb(fromDbtoPower(diffPairPositive) + fromDbtoPower(diffPairNegative))
-
-
-    def splitData(self, frequency, amplitude):
-        # When array frequency gets same value, split ?
-        return
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     # ====================================
     # TO BE DELETED
@@ -219,24 +215,24 @@ class VectorAnalyser():
 #     folder = "10092020/"
 #
 #     va = VectorAnalyser()
-    # for filename in glob.iglob(path+folder+"*.csv", recursive=True):
-    #     filename = filename.split("/")[-1]
-    #     print(filename)
-    #     data = va.readCSV(path+folder, filename)
-    #
-    #     gs = gridspec.GridSpec(1, 1, wspace=0.2, hspace=0.3)
-    #     fig = plt.figure(figsize=(8, 5.2))
-    #     ax = fig.add_subplot(gs[0])
-    #     va.plotGain(ax, color="k", alpha=0.5)
-    #     ax.set_title(filename)
-    #     plt.savefig(path+folder+"plot/"+filename.split(".")[-2], format="png")
-    #     plt.close()
+# for filename in glob.iglob(path+folder+"*.csv", recursive=True):
+#     filename = filename.split("/")[-1]
+#     print(filename)
+#     data = va.readCSV(path+folder, filename)
+#
+#     gs = gridspec.GridSpec(1, 1, wspace=0.2, hspace=0.3)
+#     fig = plt.figure(figsize=(8, 5.2))
+#     ax = fig.add_subplot(gs[0])
+#     va.plotGain(ax, color="k", alpha=0.5)
+#     ax.set_title(filename)
+#     plt.savefig(path+folder+"plot/"+filename.split(".")[-2], format="png")
+#     plt.close()
 
-    # ulp_file = "/Users/roxanneturcotte/Dropbox/KIT/Hardware/radioTad-test/ULP-340+_S2P/ULP-340+_Plus25DegC.s2p"
-    # ring_slot_ulp = rf.Network(ulp_file)
-    #
-    # sxhp_file = "/Users/roxanneturcotte/Dropbox/KIT/Hardware/radioTad-test/SXHP-48+_S2P/SXHP-48+_Plus25DegC.s2p"
-    # ring_slot_sxhp = rf.Network(sxhp_file)
+# ulp_file = "/Users/roxanneturcotte/Dropbox/KIT/Hardware/radioTad-test/ULP-340+_S2P/ULP-340+_Plus25DegC.s2p"
+# ring_slot_ulp = rf.Network(ulp_file)
+#
+# sxhp_file = "/Users/roxanneturcotte/Dropbox/KIT/Hardware/radioTad-test/SXHP-48+_S2P/SXHP-48+_Plus25DegC.s2p"
+# ring_slot_sxhp = rf.Network(sxhp_file)
 
 # # PLOT POLARISATION
 #     gs = gridspec.GridSpec(1, 1, wspace=0.2, hspace=0.3)

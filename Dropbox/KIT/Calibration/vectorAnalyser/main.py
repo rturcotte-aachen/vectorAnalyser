@@ -4,11 +4,14 @@ import readingVAcsv
 import os
 import glob
 
-va = readingVAcsv.VectorAnalyser()
-
 """Vector analyser data"""
 path = "/Users/roxanneturcotte/Dropbox/KIT/Calibration/vectorAnalyser/"
 folder = "10092020/"
+folder = "13102020/"
+
+filename = "GP_24P_5V.csv"
+
+va = readingVAcsv.VectorAnalyser(path+folder, filename)
 
 
 """Data for the radioTad components"""

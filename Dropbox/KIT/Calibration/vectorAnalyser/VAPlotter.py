@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.gridspec as gridspec
+import matplotlib
 
 font = {'size': 16}
 matplotlib.rc('font', **font)
@@ -12,17 +13,32 @@ class Plotter:
     def __int__(self, outpath="~/Documents/lostPlots/"):
         self.outpath = outpath
 
-    def plotGainBasic(self, frequency, amplitude, ax, lim=[-50, 10], filename="gainPlot.pdf", color="k", alpha=0.5, linestyle="--", label="placeHolder"):
+    def plotGainBasic(self, frequency, amplitude, lim=[-50, 10], filename="gainPlot.pdf", color="k", alpha=0.5, linestyle="--", label="placeHolder"):
         gs = gridspec.GridSpec(1, 1, wspace=0.2, hspace=0.3)
         fig = plt.figure(figsize=(8, 5.2))
         ax = fig.add_subplot(gs[0])
-        for i,  amplitude in enumerate(amplitude)
+        for i,  amplitude in enumerate(amplitude):
             ax.plot(frequency, amplitude, color=color, alpha=alpha, linestyle=linestyle, label=label)
         ax.set_xlabel("frequency / MHz")
         ax.set_ylabel("gain / dB")
         ax.set_ylim(lim)
         ax.legend()
         plt.savefig(outpath + filename)
+
+    def plotManyFilesGain(self, frequency, amplitude, label, lim=[-50, 10]):
+        gs = gridspec.GridSpec(1, 1, wspace=0.2, hspace=0.3)
+        fig = plt.figure(figsize=(8, 5.2))
+        ax = fig.add_subplot(gs[0])
+        ax.plot(frequency, amplitude, label=label)
+        ax.set_ylim(lim)
+        ax.set_xlim(20, 500)
+        return fig, ax
+
+
+
+    def plotGainPhase(self, frequency, amplitude):
+        for i in range(frequency.shape[0]):
+
 
 
 
