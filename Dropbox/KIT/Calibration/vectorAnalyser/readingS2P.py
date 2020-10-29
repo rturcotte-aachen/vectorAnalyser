@@ -1,13 +1,13 @@
 import skrf as rf
+path = "/Users/roxanneturcotte/Dropbox/KIT/Calibration/LNA/"
+folder = "BOT/"
 
-class S2P:
-    def __init__(self):
-        self.path = ""
-        self.filename = ""
+for filename in glob.iglob(path + folder + '*.s2p', recursive=True):
+    filename = filename.split("/")[-1]
+    print(filename)
+    lna = rf.Network(path + folder + filename)
+    lna.plot_s_db(m=1, n=0)
 
-    def readS2P(self, path, filename):
-        return rf.Network(path + filename)
-
-# todo : ok.... what to do here ?
-
-
+filename = "S-Parameter_LNA.s2p"
+lna = rf.Network(path + filename)
+lna.plot_s_db(m=1, n=0)

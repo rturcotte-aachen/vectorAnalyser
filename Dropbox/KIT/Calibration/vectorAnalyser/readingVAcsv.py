@@ -10,6 +10,14 @@ import pandas as pd
 
 mega = 10 ** (6)
 
+def isGain(gain=True):
+    if gain == True:
+        val = 0
+    elif gain == False:
+        val = 1
+    else:
+        print("You want gain or phase ?")
+    return val
 
 def fromPowertoDb(value):
     return 20 * np.log10(value)
@@ -17,6 +25,24 @@ def fromPowertoDb(value):
 
 def fromDbtoPower(value):
     return 10 ** (value / 20)
+
+
+def fromdBmtoVolts(value):
+    """
+    For a 50Ohm circuit
+    :param value: power in dBm
+    :return: voltage in V (0-peak)
+    """
+    return 10 ** ((value - 10)/20)
+
+
+def fromVoltstodBm(value):
+    """
+    for a 50 Ohm circuit
+    :param value: voltage in V (0-peak)
+    :return: power in dBm
+    """
+    return 10 + 20*np.log10(value)
 
 
 def HztoMhz(freq):
@@ -29,39 +55,49 @@ def MhztoHz(freq):
 
 def split(frequency, amplitude):
     begin = np.argwhere(frequency == "BEGIN")
-    frequency = np.array(frequency).reshape(len(begin), -1)[:, 1:-1]
-    amplitude = np.array(amplitude).reshape(len(begin), -1)[:, 1:-1]
+    frequency = np.array(frequency).reshape(len(begin), -1)[:, 1:-1].astype(np.float64)/mega
+    amplitude = np.array(amplitude).reshape(len(begin), -1)[:, 1:-1].astype(np.float64)
     return frequency, amplitude
+
+
+def addPairsTogether(diffPairPositive, diffPairNegative):
+    return fromPowertoDb(fromDbtoPower(diffPairPositive) + fromDbtoPower(diffPairNegative))
+
+
+def responseFunctionToTextFile(frequency, amplitude, name="test.txt"):
+    responseTotal = open(name, "w+")
+    responseTotal.write(str(frequency[0]) + " " + str(frequency[-1]) + " " + str(frequency[2] - frequency[1]) + "\n")
+    for i, amp in enumerate(amplitude):
+        responseTotal.write(str(amp) + "\n")
+    responseTotal.close()
 
 
 class VectorAnalyser:
     def __init__(self, path, filename):
-        self.filename = ""
-        self.path = ""
+        self.filename = filename
+        self.path = path
         self.amplitude = []
         self.frequency = []
+        self.data = []
         self.readCSV(path, filename)
 
     # Todo : split the file when there is more than one measurement
     def readCSV(self, path, filename):
         """reads the file and stock 2 arrays, frequency and amplitude"""
-        data = pd.read_csv(path + filename, names=["freq", "amp"], comment="!")
-        self.frequency, self.amplitude = split(data["freq"], data["amp"])
+        self.data = pd.read_csv(path + filename, names=["freq", "amp"], comment="!")
+        self.frequency, self.amplitude = split(self.data["freq"], self.data["amp"])
         # self.amplitude = data["amp"]
         # self.frequency = data["freq"]
-        return data
+        return
 
-    def removeDuplicates(self, frequency):
-        return list(set(frequency))
-
-    def split(self, frequency, amplitude):
-        if len(frequency) < len(amplitude):
-            amplitude1 = amplitude[:len(frequency)]
-            amplitude2 = amplitude[len(frequency):]
-        return [amplitude1, amplitude2]
-
-    def addPairsTogether(self, diffPairPositive, diffPairNegative):
-        return fromPowertoDb(fromDbtoPower(diffPairPositive) + fromDbtoPower(diffPairNegative))
+    # def removeDuplicates(self, frequency):
+    #     return list(set(frequency))
+    #
+    # def split(self, frequency, amplitude):
+    #     if len(frequency) < len(amplitude):
+    #         amplitude1 = amplitude[:len(frequency)]
+    #         amplitude2 = amplitude[len(frequency):]
+    #     return [amplitude1, amplitude2]
 
     # ====================================
     # TO BE DELETED
